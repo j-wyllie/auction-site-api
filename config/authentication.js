@@ -1,3 +1,5 @@
+let isLogedIn = false;
+
 exports.isAuthorised = function(req, res, next) {
     if (isValidToken(req.get('X-Authorization'))) {
         next(); // if we have a valid token, we can proceed
@@ -6,10 +8,10 @@ exports.isAuthorised = function(req, res, next) {
     }
 };
 
-function isValidToken(token) {
-    if (token.toString() ==  "abc") {
+function isValidToken(givenToken) {
+    if (givenToken.toString() === token) {
         return true;
     } else {
         return false;
     }
-}
+};

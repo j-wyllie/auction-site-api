@@ -1,4 +1,5 @@
-const users = require('../controllers/users.server.controllers');
+const users = require('../controllers/users.server.controllers'),
+    authentication = require('../../config/authentication');
 
 module.exports = function(app) {
     app.route('/api/v1/users')
@@ -8,9 +9,9 @@ module.exports = function(app) {
         .post(users.login);
 
     app.route('/api/vi/users/logout')
-        .post(users.logout);
+        .post(authentication.isAuthorised, users.logout);
 
     app.route('/api/vi/users/:userId')
-        .get(users.get)
-        .patch(users.alter);
+        .get(authentication.isAuthorised, users.get)
+        .patch(authentication.isAuthorised, users.alter);
 };
