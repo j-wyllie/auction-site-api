@@ -2,6 +2,9 @@ const db = require('../../config/db'),
     fs = require('fs');
 
 exports.reset = function(done) {
+
+    // ToDo: delete photos on reset
+
     let sql = fs.readFileSync('app/models/queries/create_database.sql').toString();
     db.get_pool().query(sql, function(err, result) {
         if (err) return done(false);

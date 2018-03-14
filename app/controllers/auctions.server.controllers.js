@@ -11,8 +11,8 @@ exports.getAll = function(req, res) {
 };
 
 exports.create = function(req, res) {
+    let token = req.get('X-Authorization');
     let auction_data = [[
-        req.get('X-Authorization'),
         req.body.title,
         req.body.categoryId,
         req.body.description,
@@ -21,7 +21,7 @@ exports.create = function(req, res) {
         req.body.startDateTime,
         req.body.endDateTime
     ]];
-    auctions.create(auction_data, function(result) {
+    auctions.create(token, auction_data, function(result) {
         res.send(result);
     });
 };
