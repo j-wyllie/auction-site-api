@@ -45,12 +45,24 @@ exports.getOne = function(auctionId, done) {
     });
 };
 
+exports.getSeller = function(userId, done) {
+    let sql = "SELECT user_username FROM auction_user WHERE user_id = ?";
+    db.get_pool().query(sql, userId, function(err, rows) {
+      if (err) {
+          done(false);
+      } else {
+          done(rows);
+      }
+    });
+};
+
 exports.alter = function(done) {
 
 };
 
-exports.viewBids = function(done) {
-
+exports.viewBids = function(auctionId, done) {
+    let sql = "";
+    done();
 };
 
 exports.makeBid = function(done) {

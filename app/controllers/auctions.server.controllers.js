@@ -29,16 +29,57 @@ exports.create = function(req, res) {
 
 exports.getOne = function(req, res) {
     let auctionId = req.params.id;
-    let response = {};
-    auctions.getOne(auctionId, function(result) {
-        if (result) {
-            response["categoryId"] = result["auction_categoryid"];
-            response["categoryTitle"] = result["auction_title"];
-            response["reservePrice"] = 
-            res.send(result);
+    // response skeleton
+    let response = {
+        "categoryId": 0,
+        "categoryTitle": "string",
+        "title": "string",
+        "reservePrice": 0,
+        "startDateTime": 0,
+        "endDateTime": 0,
+        "description": "string",
+        "createtionDateTime": 0,
+        "photoUris": [],
+        "seller": {
+            "id": 0,
+            "username": "string",
+        },
+        "currentBid": 0,
+        "bids": [
+            {
+                "amount": 0,
+                "datetime": 0,
+                "buyerId": 0,
+                "buyerUsername": "string"
+            }
+        ]
+    };
+    auctions.getOne(auctionId, function(auctionRows) {
+        if (auctionRows) {
+            // adding auction data response JSON
+            response["categoryId"] = auctionRows[0]["auction_categoryid"];
+            response["categoryTitle"] = auctionRows[0]["auction_title"];
+            response["reservePrice"] = auctionRows[0]["auction_reserveprice"];
+            response["startDateTime"] = auctionRows[0]["auction_startingdate"];
+            response["endDateTime"] = auctionRows[0]["auction_endingdate"];
+            response["description"] = auctionRows[0]["auction_description"];
+            response["creationDateTime"] = auctionRows[0]["auction_creationdate"];
         } else {
             res.send(404);
+            return;
         }
+        let userId = auctionRows[0]["auction_userid"];
+        // adding seller data to response JSON
+        auctions.getSeller(userId, function(sellerRows) {
+            let userName = sellerRows[0]["user_username"]
+            response["seller"] = {"id": userId, "username": userName};
+            // adding bid data to response JSON
+            auctions.viewBids(auctionId, function(bidRows) {
+                response["bids"][0] = bidRows;
+
+                res.send(response);
+            });
+        });
     });
 };
 
