@@ -1,12 +1,9 @@
 const auctions = require('../models/auctions.server.models');
 
 exports.getAll = function(req, res) {
+    // partial implementation
     auctions.getAll(function(result) {
-        if (result === false) {
-            res.status(400).send("malformed request");
-        } else {
-            res.status(200).send(result);
-        }
+        res.send(result);
     });
 };
 
@@ -22,13 +19,26 @@ exports.create = function(req, res) {
         req.body.endDateTime
     ]];
     auctions.create(token, auction_data, function(result) {
-        res.send(result);
+        if (result) {
+            res.status(201).send({"id": result});
+        } else {
+            res.send("failed");
+        }
     });
 };
 
 exports.getOne = function(req, res) {
-    auctions.getOne(function(result) {
-        res.send(result);
+    let auctionId = req.params.id;
+    let response = {};
+    auctions.getOne(auctionId, function(result) {
+        if (result) {
+            response["categoryId"] = result["auction_categoryid"];
+            response["categoryTitle"] = result["auction_title"];
+            response["reservePrice"] = 
+            res.send(result);
+        } else {
+            res.send(404);
+        }
     });
 };
 
