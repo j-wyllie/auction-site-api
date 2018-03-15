@@ -1,5 +1,5 @@
 const photos = require('../controllers/photos.server.controllers'),
-    authentication = require('../../config/authentication');
+    authentication = require('../controllers/authentication.server.controller');
 
 module.exports = function(app) {
     app.route('/api/v1/auctions/:id/photos')

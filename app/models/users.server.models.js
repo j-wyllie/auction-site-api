@@ -1,4 +1,5 @@
 const db = require('../../config/db'),
+    auth = require('./authentication.server.models'),
     fs = require('fs');
 
 exports.insert = function(user_data, done) {
@@ -12,16 +13,26 @@ exports.insert = function(user_data, done) {
     });
 };
 
-exports.login = function(done) {
-
+exports.getUserId = function(username, password, done) {
+    db.get_pool().query('SELECT user_id FROM auction_user WHERE user_username = ? AND user_password = ?', [username, password],
+        function(err, rows) {
+            try {
+                done(rows[0]['user_id']);
+            } catch (TypeError) {
+               done(false);
+            }
+    });
 };
 
-exports.logout = function(done) {
-
-};
-
-exports.get = function(done) {
-
+exports.getUserJson = function(user_id, done){
+    db.get_pool().query('SELECT * FROM auction_user WHERE user_id = ?', user_id,
+        function(err, result){
+            if(err) {
+                done(false);
+            } else {
+                done(result);
+            }
+        });
 };
 
 exports.alter = function(done) {

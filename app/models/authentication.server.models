@@ -1,0 +1,43 @@
+const jwt = require('jsonwebtoken'),
+    db = require('../../config/db');
+
+exports.ResetToken = function(user_id, done){
+    db.get_pool().query('UPDATE auction_user SET user_token = null WHERE user_id = ?', user_id,
+        function(err, result) {
+            if (err) return done(err);
+            done(result);
+    });
+};
+
+exports.insertToken = function(token, user_id, done) {
+    db.get_pool().query('UPDATE auction_user SET user_token = ? WHERE user_id = ?', [token, user_id],
+        function(err,result) {
+            if (err) return done(err);
+            done(result);
+    });
+};
+
+exports.checkToken = function(token, done) {
+    // returns false is no user exists, the userId if it does
+    db.get_pool().query('SELECT user_id FROM auction_user WHERE user_token = ?', token,
+        function(err, rows) {
+            if (err){
+                done(false);
+            } else {
+                done(rows[0]['user_id']);
+            }
+        });
+};
+
+exports.generateToken = function(username, password, done) {
+    let user = {
+        "username": username,
+        "password": password
+    };
+    // let token = jwt.sign(user,process.env.SECRET_KEY, {
+    //     expiresIn: 4000
+    // });
+    let token = "123456";
+
+    done(token.slice(0,31));
+};

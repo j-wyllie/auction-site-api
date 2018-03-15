@@ -19,6 +19,7 @@ exports.create = function(req, res) {
         req.body.endDateTime
     ]];
     auctions.create(token, auction_data, function(result) {
+        //users.get() could get the user_id from the token here and append to auciton_data for better mvc structure
         if (result) {
             res.status(201).send({"id": result});
         } else {
@@ -76,8 +77,8 @@ exports.getOne = function(req, res) {
             // adding bid data to response JSON
             auctions.viewBids(auctionId, function(bidRows) {
                 response["bids"][0] = bidRows;
-
-                res.send(response);
+                // after all info added to JSON response, send the response
+                res.status(200).send(response);
             });
         });
     });
