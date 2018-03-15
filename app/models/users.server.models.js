@@ -24,13 +24,13 @@ exports.getUserId = function(username, password, done) {
     });
 };
 
-exports.getUserJson = function(user_id, done){
+exports.getUserRows = function(user_id, done){
     db.get_pool().query('SELECT * FROM auction_user WHERE user_id = ?', user_id,
-        function(err, result){
+        function(err, rows){
             if(err) {
                 done(false);
             } else {
-                done(result);
+                done(rows);
             }
         });
 };

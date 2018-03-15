@@ -24,7 +24,6 @@ exports.login = function(req, res) {
     users.getUserId(username, password, function(userId) {
         if (userId) {
             authentication.generateToken(username, password, function(token) {
-                console.log(token);
                 authentication.insertToken(token, userId, function(result) {
                     let response = {};
                     response['id'] = userId;
@@ -53,12 +52,25 @@ exports.logout = function(req, res) {
 };
 
 exports.get = function(req, res) {
-    let userId = req.params.id;
+    let userId = req.params.userId;
     let token = req.get('X-Authorization');
+    let response = {
+        "username": "string",
+        "givenName": "string",
+        "familyName": "string",
+        "email": "string",
+        "accountBalance": 0
+    };
     authentication.checkToken(token, function(result) {
         if (result == userId) {
-            users.getUserJson(userId, function(result) {
-                res.status(200).send(result);
+            users.getUserRows(userId, function(result) {
+                response['username'] = result[0]['user_username'];
+                response['givenName'] = result[0]['user_givenname'];
+                response['familyName'] = result[0]['user_familyname'];
+                response['email'] = result[0]['user_email'];
+                response['accountBalance'] = result[0]['user_accountbalance'];
+                console.log(response);
+                res.status(200).send(response);
             });
         } else {
             res.status(404).send();
