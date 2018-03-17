@@ -1,7 +1,7 @@
 const photos = require('../models/photos.server.models');
 
-exports.getAuctionPhotos = function(req, res) {
-    photos.getAuctionPhotos(function(result) {
+exports.get = function(req, res) {
+    photos.select(function(result) {
         if (result === false) {
             res.status(400).send("malformed request");
         } else {
@@ -10,26 +10,14 @@ exports.getAuctionPhotos = function(req, res) {
     });
 };
 
-exports.addAuctionPhoto = function(req, res) {
-    photos.addAuctionPhoto(function(result) {
+exports.add = function(req, res) {
+    photos.insert(function(result) {
         res.send(result);
     });
 };
 
-exports.getOneAuctionPhoto = function(req, res) {
-    photos.getOneAuctionPhoto(function(result) {
-        res.send(result);
-    });
-};
-
-exports.updateAuctionPhoto = function(req, res) {
-    photos.updateAuctionPhoto(function(result) {
-        res.send(result);
-    });
-};
-
-exports.deleteAuctionPhoto = function(req, res) {
-    photos.deleteAuctionPhoto(function(result) {
+exports.delete = function(req, res) {
+    photos.drop(function(result) {
         res.send(result);
     });
 };

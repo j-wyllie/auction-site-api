@@ -22,6 +22,7 @@ exports.login = function(req, res) {
     let username = req.query.username;
     let password = req.query.password;
     users.getUserId(username, password, function(userId) {
+        //console.log(userId);
         if (userId) {
             authentication.generateToken(username, password, function(token) {
                 authentication.insertToken(token, userId, function(result) {
@@ -69,7 +70,6 @@ exports.get = function(req, res) {
                 response['familyName'] = result[0]['user_familyname'];
                 response['email'] = result[0]['user_email'];
                 response['accountBalance'] = result[0]['user_accountbalance'];
-                console.log(response);
                 res.status(200).send(response);
             });
         } else {

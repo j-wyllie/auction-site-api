@@ -61,11 +61,25 @@ exports.alter = function(done) {
 };
 
 exports.viewBids = function(auctionId, done) {
-    let sql = "";
-    done();
+    let sql = "SELECT bid.bid_amount AS amount, bid.bid_datetime AS datetime, bid.bid_userid AS buyerId, auction_user.user_username AS buyerUsername FROM bid INNER JOIN " +
+        "auction_user ON auction_user.user_id=bid.bid_userid WHERE bid.bid_auctionid = ?";
+    db.get_pool().query(sql, [auctionId], function(err, rows) {
+        if (err) {
+            done(false);
+        } else {
+            done(rows);
+        }
+    });
 };
 
-exports.makeBid = function(done) {
-
+exports.makeBid = function(bidData, done) {
+    let sql = "INSERT INTO bid (bid_userid, bid_auctionid, bid_amount, bid_datetime) VALUES (?);";
+    db.get_pool().query(sql, [bidData], function(err, rows) {
+        if (err) {
+            done(err);
+        } else {
+            done(rows);
+        }
+    });
 };
 

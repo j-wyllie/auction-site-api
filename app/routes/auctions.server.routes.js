@@ -5,11 +5,11 @@ module.exports = function(app) {
         .get(auctions.getAll)
         .post(auctions.create);
 
-    app.route('/api/v1/auctions/:id')
+    app.route('/api/v1/auctions/:auctionId')
         .get(auctions.getOne)
         .patch(auctions.alter);
 
-    app.route('/api/vi/:id/bids')
+    app.route('/api/v1/auctions/:auctionId/bids')
         .get(auctions.viewBids)
         .post(auctions.makeBid);
 };
