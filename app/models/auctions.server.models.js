@@ -15,7 +15,7 @@ exports.getAll = function(sql, done) {
 exports.create = function(token, auction_data, done) {
     let userId = null;
     let sql_1 = "SELECT user_id FROM auction_user WHERE user_token = ?"
-    let sql_2 = "INSERT INTO auction (auction_title, auction_categoryid, auction_description, auction_reserveprice, auction_startingprice, auction_startingdate, auction_endingdate, auction_userid) VALUES (?);";
+    let sql_2 = "INSERT INTO auction (auction_title, auction_categoryid, auction_description, auction_reserveprice, auction_startingprice, auction_creationdate, auction_startingdate, auction_endingdate, auction_userid) VALUES (?);";
     sql_2 += "SELECT LAST_INSERT_ID() AS auction_id;";
     db.get_pool().query(sql_1, token, function(err, rows) {
         if (err) {
@@ -83,8 +83,8 @@ exports.viewBids = function(auctionId, done) {
 };
 
 exports.makeBid = function(bidData, done) {
-    console.log(userId, parseInt(auctionId), parseFloat(amount));
-    let sql = "INSERT INTO bid (bid_userid, bid_auctionid, bid_amount) VALUES (?);";
+    console.log(bidData);
+    let sql = "INSERT INTO bid (bid_userid, bid_auctionid, bid_amount, bid_datetime) VALUES (?);";
     db.get_pool().query(sql, bidData, function(err, rows) {
         if (err) {
             done(err);

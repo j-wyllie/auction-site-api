@@ -54,6 +54,7 @@ exports.create = function(req, res) {
                req.body.description,
                req.body.reservePrice,
                req.body.startingBid,
+               (moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')),
                (moment(req.body.startDateTime).format('YYYY-MM-DD HH:mm:ss')),
                (moment(req.body.endDateTime).format('YYYY-MM-DD HH:mm:ss'))
            ]];
@@ -180,7 +181,8 @@ exports.makeBid = function(req, res) {
 
     auth.checkToken(token, function(userId) {
         if (userId) {
-            auctions.makeBid([userId, auctionId, amount, 0], function(result) {
+            let date = (moment(Date.now())).format('YYYY-MM-DD HH:mm:ss')
+            auctions.makeBid([[userId, auctionId, amount, date]], function(result) {
                 res.status(201).send(result);
             });
         } else {

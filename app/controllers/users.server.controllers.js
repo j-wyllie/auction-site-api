@@ -22,9 +22,9 @@ exports.login = function(req, res) {
     let username = req.query.username;
     let password = req.query.password;
     users.getUserId(username, password, function(userId) {
-        //console.log(userId);
         if (userId) {
             authentication.generateToken(username, password, function(token) {
+                console.log(token);
                 authentication.insertToken(token, userId, function(result) {
                     let response = {};
                     response['id'] = userId;

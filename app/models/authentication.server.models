@@ -41,11 +41,8 @@ exports.generateToken = function(username, password, done) {
     // let token = jwt.sign(user,process.env.SECRET_KEY, {
     //     expiresIn: 4000
     // });
-    let token = function() {
-        toke = (Math.random().toString(36).substr(2)) + (Math.random().toString(36).substr(2))
-        return toke;
-    }
+    toke = (Math.random().toString(36).substr(2)) + (Math.random().toString(36).substr(2));
     //let token = "123456";
 
-    done(token.slice(0,31));
+    done(toke);
 };

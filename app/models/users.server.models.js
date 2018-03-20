@@ -14,7 +14,7 @@ exports.insert = function(user_data, done) {
 };
 
 exports.getUserId = function(username, password, done) {
-    db.get_pool().query('SELECT user_id FROM auction_user WHERE user_username = ? AND user_password = ?', [username, password],
+    db.get_pool().query('SELECT user_id FROM auction_user WHERE (user_username = ? OR user_password = ?)', [username, password],
         function(err, rows) {
             try {
                 done(rows[0]['user_id']);
