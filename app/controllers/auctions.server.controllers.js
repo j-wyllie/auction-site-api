@@ -1,9 +1,45 @@
 const auctions = require('../models/auctions.server.models'),
-    auth = require('../models/authentication.server.models');
+    auth = require('../models/authentication.server.models'),
+    moment = require('moment');
 
 exports.getAll = function(req, res) {
-    // partial implementation
-    auctions.getAll(function(result) {
+    let sql = "SELECT auction_id, auction_title, auction_categoryid, auction_reserveprice, auction_startingdate, auction_endingdate FROM auction LIMIT";
+
+    // ---------- LIMIT ----------
+    let isComma = false;
+    let startIndex = parseInt(req.query.startIndex);
+    if (startIndex != 'undefined') {
+        sql += " " + startIndex;
+        isComma = true;
+    }
+    let count = parseInt(req.query.count);
+    if (count != 'undefined') {
+        if (isComma) {
+            sql += ",";
+        } isComma = false;
+        sql += " " + count;
+    }
+
+    if (parseInt(req.query.q) != 'undefined') {
+
+    }
+    if (parseInt(req.param('category-id') != 'undefined')) {
+
+    }
+    if (parseInt(req.query.seller) != 'undefined') {
+
+    }
+    if (parseInt(req.query.bidder) != 'undefined') {
+
+    }
+    if(parseInt(req.query.winner) != 'undefined') {
+
+    }
+
+    sql += ";";
+    console.log(sql);
+
+    auctions.getAll(sql, function(result) {
         res.send(result);
     });
 };
@@ -18,15 +54,15 @@ exports.create = function(req, res) {
                req.body.description,
                req.body.reservePrice,
                req.body.startingBid,
-               req.body.startDateTime,
-               req.body.endDateTime
+               (moment(req.body.startDateTime).format('YYYY-MM-DD HH:mm:ss')),
+               (moment(req.body.endDateTime).format('YYYY-MM-DD HH:mm:ss'))
            ]];
+           console.log(auction_data);
            auctions.create(token, auction_data, function(result) {
-               //users.get() could get the user_id from the token here and append to auciton_data for better mvc structure
                if (result) {
                    res.status(201).send({"id": result});
                } else {
-                   res.send("failed");
+                   res.status(500).send();
                }
            });
        } else {
@@ -85,8 +121,44 @@ exports.getOne = function(req, res) {
 };
 
 exports.alter = function(req, res) {
-    auctions.alter(function(result) {
-        res.send(result);
+    let token = req.get('X-Authorization');
+    let auctionId = req.params.auctionId;
+    let auctionData = [
+        req.body.catagoryId,
+        req.body.title,
+        req.body.description,
+        (moment(req.body.startDateTime).format('YYYY-MM-DD HH:mm:ss')),
+        (moment(req.body.endDateTime).format('YYYY-MM-DD HH:mm:ss')),
+        req.body.reservePrice,
+        req.body.startingBid,
+        req.body.startingBid,
+        auctionId
+    ];
+    let rowDataNames = ['auction_categoryid', 'auction_title', 'auction_description', 'auction_startingdate', 'auction_endingdate', 'auction_reserveprice', 'auction_startingprice', 'auction_id'];
+
+    auth.checkToken(token, function(correctToken) {
+        if (correctToken) {
+            auctions.getOne(auctionId, function(result) {
+                // fill undefined auction_data with previous value
+                for (let i = 0; i < auctionData.length; i++){
+                    if(auctionData[i] === undefined){
+                        auctionData[i] = result[0][rowDataNames[i]];
+                    }
+                }
+                console.log("controler auctionData" + auctionData);
+                // update with newly compiled auctionData
+                auctions.update(auctionData, function(result) {
+                    if(result){
+                        res.status(200).send();
+                    } else {
+                        res.status(500).send(result);
+                    }
+                });
+
+            });
+        } else {
+            res.status(401).send();
+        }
     });
 };
 
@@ -112,7 +184,7 @@ exports.makeBid = function(req, res) {
                 res.status(201).send(result);
             });
         } else {
-            res.status(404).send();
+            res.status(401).send();
         }
     });
 };

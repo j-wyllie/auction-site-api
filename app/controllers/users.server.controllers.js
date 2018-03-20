@@ -80,7 +80,45 @@ exports.get = function(req, res) {
 };
 
 exports.alter = function (req, res) {
-    users.alter(function(result) {
-        res.send(result);
+    let token = req.get('X-Authorization');
+    let user_data =  {
+        "id": req.body.id,
+        "username": req.body.username,
+        "givenName": req.body.givenName,
+        "familyName": req.body.familyName,
+        "email": req.body.email,
+        "password": req.body.password,
+        "salt":req.body.salt,
+        "token":req.body.token,
+        "accountBalance":req.body.accountBalance,
+        "reputation":req.body.reputation
+
+    };
+    let jsonDataNames = ['id','username','givenName','familyName','email','password','salt','token','accountBalance','reputation'];
+    let packetDataNames = ['user_id','user_username','user_givenname','user_familyname','user_email','user_password','user_salt','user_token','user_accountbalance','user_reputation'];
+
+    authentication.checkToken(token, function(correctToken) {
+        if (correctToken) {
+            users.getUserRows(correctToken, function(result) {
+                // fill undefined user_data with previous value
+                for (let i = 0; i < 9; i++){
+                    if(user_data[jsonDataNames[i]] === undefined){
+                        user_data[jsonDataNames[i]] = result[0][packetDataNames[i]];
+                    }
+                }
+                console.log("controler user_data" + user_data);
+                // update with newly compiled user_data
+                users.updateUserDetails(user_data, function(result) {
+                    if(result){
+                        res.status(200).send();
+                    } else {
+                        res.status(500).send();
+                    }
+                });
+
+            });
+        } else {
+            res.status(401).send();
+        }
     });
 };

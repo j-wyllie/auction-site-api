@@ -1,8 +1,8 @@
 const db = require('../../config/db'),
     fs = require('fs');
 
-exports.getAll = function(done) {
-    let sql = "SELECT * FROM auction";
+exports.getAll = function(sql, done) {
+    //let sql = "SELECT auction_id, auction_title, auction_categoryid, auction_reserveprice, auction_startingdate, auction_endingdate FROM auction WHERE LIKE LIMIT startIndex, count";
     db.get_pool().query(sql, function(err, rows) {
         if (err) {
             done(err);
@@ -19,6 +19,7 @@ exports.create = function(token, auction_data, done) {
     sql_2 += "SELECT LAST_INSERT_ID() AS auction_id;";
     db.get_pool().query(sql_1, token, function(err, rows) {
         if (err) {
+            console.log("q1: " + err);
             done(false);
         } else {
             userId = rows[0]['user_id'];
@@ -26,6 +27,7 @@ exports.create = function(token, auction_data, done) {
         }
         db.get_pool().query(sql_2, auction_data, function(err, rows) {
             if (err) {
+                console.log("q2: " + err);
                 done(false);
             } else {
                 done(rows[1][0]['auction_id']);
@@ -36,7 +38,7 @@ exports.create = function(token, auction_data, done) {
 
 exports.getOne = function(auctionId, done) {
     let sql = "SELECT * FROM auction WHERE auction_id = ?";
-    db.get_pool().query(sql, auctionId, function(err, rows){
+    db.get_pool().query(sql, auctionId, function(err, rows) {
         if (err) {
             done(false);
         } else {
@@ -56,8 +58,16 @@ exports.getSeller = function(userId, done) {
     });
 };
 
-exports.alter = function(done) {
-
+exports.update = function(auctionData, done) {
+    let sql = "UPDATE auction SET auction_categoryid = ?, auction_title = ?, auction_description = ?, auction_startingdate = ?, auction_endingdate = ?, auction_reserveprice = ?,  auction_startingprice = ?  WHERE auction_id = ?";
+    db.get_pool().query(sql, auctionData, function(err, result) {
+        if (err){
+            console.log(err);
+            done(false);
+        } else {
+            done(result);
+        }
+    });
 };
 
 exports.viewBids = function(auctionId, done) {
@@ -73,8 +83,9 @@ exports.viewBids = function(auctionId, done) {
 };
 
 exports.makeBid = function(bidData, done) {
-    let sql = "INSERT INTO bid (bid_userid, bid_auctionid, bid_amount, bid_datetime) VALUES (?);";
-    db.get_pool().query(sql, [bidData], function(err, rows) {
+    console.log(userId, parseInt(auctionId), parseFloat(amount));
+    let sql = "INSERT INTO bid (bid_userid, bid_auctionid, bid_amount) VALUES (?);";
+    db.get_pool().query(sql, bidData, function(err, rows) {
         if (err) {
             done(err);
         } else {

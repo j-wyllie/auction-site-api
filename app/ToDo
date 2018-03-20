@@ -1,0 +1,10 @@
+GET /aucitons
+fix date
+validation
+rng token
+
+test -> correct error codes
+
+
+
+moment(req.body.startDateTime).format('YYYY-MM-DD HH:mm:ss')

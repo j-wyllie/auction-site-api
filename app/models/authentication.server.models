@@ -21,10 +21,14 @@ exports.checkToken = function(token, done) {
     // returns false is no user exists, the userId if it does
     db.get_pool().query('SELECT user_id FROM auction_user WHERE user_token = ?', token,
         function(err, rows) {
-            if (err){
+            try {
+                if (err) {
+                    done(false);
+                } else {
+                    done(rows[0]['user_id']);
+                }
+            } catch (err) {
                 done(false);
-            } else {
-                done(rows[0]['user_id']);
             }
         });
 };
